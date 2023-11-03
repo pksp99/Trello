@@ -1,0 +1,260 @@
+openapi: 3.0.3
+info:
+  title: Trello Clone API
+  version: 1.0.0
+  description: An API for managing users, tasks, subtasks, and task assignments in a Trello-like application
+
+paths:
+  /users:
+    get:
+      summary: Get all users
+      tags:
+        - Users
+      responses:
+        '200':
+          description: List of all users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultipleUsersResponse'
+
+    post:
+      summary: Add a user
+      tags:
+        - Users
+      requestBody:
+        description: User information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '201':
+          description: User added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+    delete:
+      summary: Remove a user
+      tags:
+        - Users
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: User removed successfully
+
+  /tasks:
+    post:
+      summary: Create a task
+      tags:
+        - Tasks
+      requestBody:
+        description: Task information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+
+    put:
+      summary: Modify a task
+      tags:
+        - Tasks
+      parameters:
+        - in: query
+          name: taskId
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        description: Updated task information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+      responses:
+        '200':
+          description: Task modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+
+    delete:
+      summary: Delete a task
+      tags:
+        - Tasks
+      parameters:
+        - in: query
+          name: taskId
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: Task deleted successfully
+
+  /tasks/show_board:
+    get:
+      summary: Show board (List all tasks)
+      tags:
+        - Tasks
+      responses:
+        '200':
+          description: List of all tasks on the board
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultipleTasksResponse'
+
+
+  /tasks/{taskId}/assign_users:
+    post:
+      summary: Assign users to a task
+      tags:
+        - Tasks
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        description: User IDs to assign to the task
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignUsersRequest'
+      responses:
+        '201':
+          description: Users assigned to the task successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignUsersResponse'
+
+components:
+  schemas:
+    UserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: user1
+        email:
+          type: string
+          example: user1@example.com
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: user1
+        email:
+          type: string
+          example: user1@example.com
+
+    TaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Task 1
+        description:
+          type: string
+          example: Description of Task 1
+        userId:
+          type: integer
+          example: 1
+        state:
+          type: string
+          enum:
+            - "TODO"
+            - "IN_PROGRESS"
+            - "DONE"
+        assignedUsers:
+          type: array
+          items:
+            type: integer
+          example: [1, 2]
+
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Task 1
+        description:
+          type: string
+          example: Description of Task 1
+        userId:
+          type: integer
+          example: 1
+        state:
+          type: string
+          enum:
+            - "TODO"
+            - "IN_PROGRESS"
+            - "DONE"
+        assignedUsers:
+          type: array
+          items:
+            type: integer
+          example: [1, 2]
+
+
+    AssignUsersRequest:
+      type: array
+      items:
+        type: integer
+        example: [1, 2, 3]
+
+    AssignUsersResponse:
+      type: object
+      properties:
+        taskId:
+          type: integer
+          example: 1
+        assignedUsers:
+          type: array
+          items:
+            type: integer
+          example: [1, 2, 3]
+
+    MultipleUsersResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserResponse'
+
+    MultipleTasksResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/TaskResponse'
