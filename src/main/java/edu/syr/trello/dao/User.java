@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Data
 @Document(collection = "users")
@@ -20,4 +21,6 @@ public class User {
 
     @Email
     private String email;
+
+    private List<String> assignedTaskIds;
 }

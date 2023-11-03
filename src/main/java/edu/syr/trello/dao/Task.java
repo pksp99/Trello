@@ -30,6 +30,6 @@ public class Task {
     @LastModifiedDate
     private LocalDateTime lastModifiedDateTime;
 
-    private List<String> assignedUsers;
+    private List<String> assignedUserIds;
 
 }

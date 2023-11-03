@@ -15,6 +15,6 @@ public class TaskRequest {
 
     private TaskStateEnum state = TaskStateEnum.TODO;
 
-    private List<String> assignedUsers;
+    private List<String> assignedUserIds;
 
 }
