@@ -2,13 +2,13 @@ package edu.syr.trello.service;
 
 import edu.syr.trello.dao.User;
 import edu.syr.trello.model.UserRequest;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 public interface UserService {
     User createUser(UserRequest userRequest);
 
-    List<User> getAllUsers();
+    Page<User> getAllUsers(PageRequest pageRequest);
 
     User getUserById(String userId);
 

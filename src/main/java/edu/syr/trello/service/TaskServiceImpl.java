@@ -5,9 +5,9 @@ import edu.syr.trello.mapper.TaskMapper;
 import edu.syr.trello.model.TaskRequest;
 import edu.syr.trello.respository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -31,8 +31,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public Page<Task> getAllTasks(PageRequest pageRequest) {
+        return taskRepository.findAll(pageRequest);
     }
 
     @Override
