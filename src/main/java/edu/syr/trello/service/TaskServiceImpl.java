@@ -3,10 +3,13 @@ package edu.syr.trello.service;
 import edu.syr.trello.dao.Task;
 import edu.syr.trello.dao.User;
 import edu.syr.trello.mapper.TaskMapper;
+import edu.syr.trello.model.TaskFilterRequest;
 import edu.syr.trello.model.TaskRequest;
 import edu.syr.trello.respository.TaskRepository;
 import edu.syr.trello.respository.UserRepository;
 import edu.syr.trello.util.UserUtil;
+import edu.syr.trello.util.filters.TaskFilter;
+import edu.syr.trello.util.filters.TaskFilterFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,7 +51,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void deleteTask(String taskId) {
         Task existingTask = taskRepository.findById(taskId).orElse(null);
-        if(existingTask == null) return;
+        if (existingTask == null) return;
         taskRepository.delete(existingTask);
 
         // Remove Task from Associated Users
@@ -65,9 +68,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public List<Task> getFilteredTasks(TaskFilterRequest filterRequest) {
+        if (filterRequest == null) return taskRepository.findAll();
+        TaskFilter taskFilter = TaskFilterFactory.getFilter(filterRequest);
+        return taskFilter.filterTasks(taskRepository.findAll());
+    }
+
+    @Override
     public Task modifyTask(String taskId, TaskRequest body) {
         Task existingTask = taskRepository.findById(taskId).orElse(null);
-        if(existingTask == null) return null;
+        if (existingTask == null) return null;
 
         // Modify Tasks for associated Users
         List<User> updatedAssignedUsers = (!ObjectUtils.isEmpty(body.getAssignedUserIds()))
@@ -86,4 +96,6 @@ public class TaskServiceImpl implements TaskService {
 
         return existingTask;
     }
+
+
 }

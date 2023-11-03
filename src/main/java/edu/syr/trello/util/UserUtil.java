@@ -4,6 +4,7 @@ import edu.syr.trello.dao.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
 @Component
 public class UserUtil {
 
@@ -28,6 +29,7 @@ public class UserUtil {
             });
         }
     }
+
     public void updateTaskId(List<User> existingAssignedUsers, List<User> updatedAssignedUsers, String taskId) {
         if (taskId != null) {
             removeTaskFromUsers(existingAssignedUsers, taskId);

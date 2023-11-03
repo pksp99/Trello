@@ -1,12 +1,12 @@
 package edu.syr.trello.controller;
 
 import edu.syr.trello.dao.Task;
+import edu.syr.trello.model.TaskFilterRequest;
 import edu.syr.trello.model.TaskRequest;
 import edu.syr.trello.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +31,12 @@ public class TaskController {
             @RequestParam(name = "size", defaultValue = "10") int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Task> tasks = taskService.getAllTasks(pageRequest);
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/applyFilter")
+    public ResponseEntity<List<Task>> getFilteredTasks(@RequestBody(required = false) TaskFilterRequest filterRequest) {
+        List<Task> tasks = taskService.getFilteredTasks(filterRequest);
         return ResponseEntity.ok(tasks);
     }
 
