@@ -23,13 +23,13 @@ public class UserController {
             @RequestParam(name = "size", defaultValue = "10") int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<User> users = userService.getAllUsers(pageRequest);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
     @PostMapping(value = "/create")
     public ResponseEntity<User> createUser(@RequestBody UserRequest userRequest) {
         User createdUser = userService.createUser(userRequest);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
 
@@ -37,9 +37,9 @@ public class UserController {
     public ResponseEntity<User> getUserById(@PathVariable String userId) {
         User user = userService.getUserById(userId);
         if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            return ResponseEntity.ok(user);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 

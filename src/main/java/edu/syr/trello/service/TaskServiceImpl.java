@@ -68,6 +68,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Task getUserById(String taskId) {
+        return taskRepository.findById(taskId).orElse(null);
+    }
+
+    @Override
     public List<Task> getFilteredTasks(TaskFilterRequest filterRequest) {
         if (filterRequest == null) return taskRepository.findAll();
         TaskFilter taskFilter = TaskFilterFactory.getFilter(filterRequest);

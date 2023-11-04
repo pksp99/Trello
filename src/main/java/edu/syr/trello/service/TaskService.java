@@ -18,4 +18,6 @@ public interface TaskService {
     Task modifyTask(String taskId, TaskRequest body);
 
     Page<Task> getAllTasks(PageRequest pageRequest);
+
+    Task getUserById(String taskId);
 }
