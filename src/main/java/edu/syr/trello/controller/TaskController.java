@@ -7,6 +7,7 @@ import edu.syr.trello.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +44,7 @@ public class TaskController {
     @PostMapping("/create")
     public ResponseEntity<Task> createTask(@Valid @RequestBody TaskRequest body) {
         Task createdTask = taskService.createTask(body);
-        return ResponseEntity.ok(createdTask);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
     @DeleteMapping("/delete/{taskId}")
@@ -58,5 +59,15 @@ public class TaskController {
             @Valid @RequestBody TaskRequest body) {
         Task modifiedTask = taskService.modifyTask(taskId, body);
         return ResponseEntity.ok(modifiedTask);
+    }
+
+    @GetMapping("/{taskId}")
+    public ResponseEntity<Task> getUserById(@PathVariable String taskId) {
+        Task task = taskService.getUserById(taskId);
+        if (task != null) {
+            return ResponseEntity.ok(task);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
