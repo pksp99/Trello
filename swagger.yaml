@@ -1,64 +1,44 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
   title: Trello Clone API
   version: 1.0.0
-  description: An API for managing users, tasks, subtasks, and task assignments in a Trello-like application
+  description: An API for managing users, tasks, and task assignments in a Trello-like application
+
 
 paths:
-  /users:
+  /tasks:
     get:
-      summary: Get all users
       tags:
-        - Users
-      responses:
-        '200':
-          description: List of all users
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MultipleUsersResponse'
-
-    post:
-      summary: Add a user
-      tags:
-        - Users
-      requestBody:
-        description: User information
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequest'
-      responses:
-        '201':
-          description: User added successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-
-    delete:
-      summary: Remove a user
-      tags:
-        - Users
+        - Task
+      summary: Get all tasks
       parameters:
-        - in: query
-          name: userId
-          required: true
+        - name: page
+          in: query
+          description: Page number
+          required: false
           schema:
             type: integer
-          example: 1
+            default: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            default: 10
       responses:
-        '204':
-          description: User removed successfully
-
-  /tasks:
+        '200':
+          description: A list of tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskPage'
     post:
-      summary: Create a task
       tags:
-        - Tasks
+        - Task
+      summary: Create a new task
       requestBody:
-        description: Task information
+        description: Task details
         required: true
         content:
           application/json:
@@ -70,21 +50,62 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
-
-    put:
-      summary: Modify a task
+                $ref: '#/components/schemas/Task'
+  /tasks/applyFilter:
+    post:
       tags:
-        - Tasks
+        - Task
+      summary: Get filtered tasks
+      requestBody:
+        description: Task filter criteria
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskFilterRequest'
+      responses:
+        '200':
+          description: A list of filtered tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+  /tasks/{taskId}:
+    get:
+      tags:
+        - Task
+      summary: Get a task by ID
       parameters:
-        - in: query
-          name: taskId
+        - name: taskId
+          in: path
+          description: Task ID
           required: true
           schema:
-            type: integer
-          example: 1
+            type: string
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task not found
+    patch:
+      tags:
+        - Task
+      summary: Update a task by ID
+      parameters:
+        - name: taskId
+          in: path
+          description: Task ID
+          required: true
+          schema:
+            type: string
       requestBody:
-        description: Updated task information
+        description: Task details
         required: true
         content:
           application/json:
@@ -92,169 +113,272 @@ paths:
               $ref: '#/components/schemas/TaskRequest'
       responses:
         '200':
-          description: Task modified successfully
+          description: Task updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
-
+                $ref: '#/components/schemas/Task'
     delete:
-      summary: Delete a task
       tags:
-        - Tasks
+        - Task
+      summary: Delete a task by ID
       parameters:
-        - in: query
-          name: taskId
+        - name: taskId
+          in: path
+          description: Task ID
           required: true
           schema:
-            type: integer
-          example: 1
+            type: string
       responses:
         '204':
           description: Task deleted successfully
 
-  /tasks/show_board:
+  /users:
     get:
-      summary: Show board (List all tasks)
+      summary: Get all users
       tags:
-        - Tasks
+        - User
       responses:
         '200':
-          description: List of all tasks on the board
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MultipleTasksResponse'
-
-
-  /tasks/{taskId}/assign_users:
+                $ref: '#/components/schemas/UserPage'
+  /users/create:
     post:
-      summary: Assign users to a task
+      summary: Create a new user
       tags:
-        - Tasks
-      parameters:
-        - in: path
-          name: taskId
-          required: true
-          schema:
-            type: integer
-          example: 1
+        - User
       requestBody:
-        description: User IDs to assign to the task
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AssignUsersRequest'
+              $ref: '#/components/schemas/UserRequest'
       responses:
         '201':
-          description: Users assigned to the task successfully
+          description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssignUsersResponse'
+                $ref: '#/components/schemas/User'
+  /users/{userId}:
+    get:
+      summary: Get user by ID
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+  /users/delete/{userId}:
+    delete:
+      summary: Delete a user
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted
+
 
 components:
   schemas:
-    UserRequest:
+    TaskPage:
       type: object
       properties:
-        username:
-          type: string
-          example: user1
-        email:
-          type: string
-          example: user1@example.com
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        pageable:
+          type: object
+          properties:
+            sort:
+              type: object
+            offset:
+              type: integer
+            pageNumber:
+              type: integer
+            pageSize:
+              type: integer
+            paged:
+              type: boolean
+            unpaged:
+              type: boolean
+        totalPages:
+          type: integer
+        totalElements:
+          type: integer
+        last:
+          type: boolean
+        first:
+          type: boolean
+        sort:
+          type: object
+        numberOfElements:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
 
-    UserResponse:
+
+    Task:
       type: object
       properties:
         id:
-          type: integer
-          example: 1
-        username:
           type: string
-          example: user1
-        email:
+        title:
           type: string
-          example: user1@example.com
+        description:
+          type: string
+        userId:
+          type: string
+        state:
+          type: string
+          enum: [TODO, IN_PROGRESS, DONE]
+        createdDateTime:
+          type: string
+          format: date-time
+        lastModifiedDateTime:
+          type: string
+          format: date-time
+        assignedUserIds:
+          type: array
+          items:
+            type: string
+      example:
+        id: "1"
+        title: "Sample Task"
+        description: "This is a sample task"
+        userId: "user123"
+        state: "TODO"
+        createdDateTime: "2023-11-05T10:00:00Z"
+        lastModifiedDateTime: "2023-11-05T10:00:00Z"
+        assignedUserIds: ["user123"]
 
     TaskRequest:
       type: object
       properties:
         title:
           type: string
-          example: Task 1
         description:
           type: string
-          example: Description of Task 1
         userId:
-          type: integer
-          example: 1
+          type: string
         state:
           type: string
-          enum:
-            - "TODO"
-            - "IN_PROGRESS"
-            - "DONE"
-        assignedUsers:
+          enum: [TODO, IN_PROGRESS, DONE]
+        assignedUserIds:
           type: array
           items:
-            type: integer
-          example: [1, 2]
+            type: string
+      example:
+        title: "Sample Task"
+        description: "This is a sample task"
+        userId: "user123"
+        state: "TODO"
+        assignedUserIds: ["user123"]
 
-    TaskResponse:
+    TaskFilterRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+          enum: [TODO, IN_PROGRESS, DONE]
+        createdDateTimeFrom:
+          type: string
+          format: date-time
+        assignedUserIds:
+          type: array
+          items:
+            type: string
+      example:
+        title: "Sample Task"
+        description: "This is a sample task"
+        state: "TODO"
+        createdDateTimeFrom: "2023-11-01T00:00:00Z"
+        assignedUserIds: ["user123"]
+
+
+    User:
       type: object
       properties:
         id:
-          type: integer
-          example: 1
-        title:
           type: string
-          example: Task 1
-        description:
+        username:
           type: string
-          example: Description of Task 1
-        userId:
-          type: integer
-          example: 1
-        state:
+        email:
           type: string
-          enum:
-            - "TODO"
-            - "IN_PROGRESS"
-            - "DONE"
-        assignedUsers:
+        assignedTaskIds:
           type: array
           items:
-            type: integer
-          example: [1, 2]
-
-
-    AssignUsersRequest:
-      type: array
-      items:
-        type: integer
-        example: [1, 2, 3]
-
-    AssignUsersResponse:
+            type: string
+    UserRequest:
       type: object
       properties:
-        taskId:
-          type: integer
-          example: 1
-        assignedUsers:
+        username:
+          type: string
+        email:
+          type: string
+    UserPage:
+      type: object
+      properties:
+        content:
           type: array
           items:
-            type: integer
-          example: [1, 2, 3]
+            $ref: '#/components/schemas/User'
+        pageable:
+          type: object
+          properties:
+            sort:
+              type: object
+            offset:
+              type: integer
+            pageNumber:
+              type: integer
+            pageSize:
+              type: integer
+            paged:
+              type: boolean
+            unpaged:
+              type: boolean
+        totalPages:
+          type: integer
+        totalElements:
+          type: integer
+        last:
+          type: boolean
+        first:
+          type: boolean
+        sort:
+          type: object
+        numberOfElements:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
 
-    MultipleUsersResponse:
-      type: array
-      items:
-        $ref: '#/components/schemas/UserResponse'
-
-    MultipleTasksResponse:
-      type: array
-      items:
-        $ref: '#/components/schemas/TaskResponse'
