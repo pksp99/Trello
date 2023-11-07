@@ -11,6 +11,10 @@ paths:
       tags:
         - Task
       summary: Get all tasks
+      description: |
+        - Get all Tasks.
+        - Implemented Paging.
+        - Default page size is 10 and default page is 0.
       parameters:
         - name: page
           in: query
@@ -37,6 +41,13 @@ paths:
       tags:
         - Task
       summary: Create a new task
+      description: |
+        - Create a new Task.
+        - Default state of the Task is TODO.
+        - Task can be created with 0 assigned Users.
+        - Only valid _assignedUserIds_ are added in assigned users. Other Invalid ones are ignored.
+        - User Table is updated, to have respective _assignedTaskId_.
+
       requestBody:
         description: Task details
         required: true
@@ -56,6 +67,10 @@ paths:
       tags:
         - Task
       summary: Get filtered tasks
+      description: |
+        - Apply all the filters in request body.
+        - For title and description filter, case insensitive substrings are checked.
+        - Implemented using decorator pattern.
       requestBody:
         description: Task filter criteria
         required: false
@@ -77,6 +92,9 @@ paths:
       tags:
         - Task
       summary: Get a task by ID
+      description: |
+        - Get task by TaskId.
+        - Give 404 not found error if invalid taskId.
       parameters:
         - name: taskId
           in: path
@@ -97,6 +115,11 @@ paths:
       tags:
         - Task
       summary: Update a task by ID
+      description: |
+        - It is patch call. Only fields provided in request body are updated.
+        - Fields not in the request body remain same.
+        - When _assignedUserId_ change, respective User Table is updated to add/remove _assignedTaskIds_.
+        - _lastModifiedDateTime_ is updated for every modification made.
       parameters:
         - name: taskId
           in: path
@@ -122,6 +145,9 @@ paths:
       tags:
         - Task
       summary: Delete a task by ID
+      description: |
+        - Deletes a Task.
+        - Remove respective _assignedTaskId_ from assigned Users in User Table.
       parameters:
         - name: taskId
           in: path
@@ -136,6 +162,10 @@ paths:
   /users:
     get:
       summary: Get all users
+      description:  |
+        - Get all users.
+        - Implemented Paging.
+        - Default page size is 10 and default page is 0.
       tags:
         - User
       responses:
@@ -148,6 +178,8 @@ paths:
   /users/create:
     post:
       summary: Create a new user
+      description: |
+        - new user is created with 0 assigned Tasks.
       tags:
         - User
       requestBody:
@@ -166,6 +198,9 @@ paths:
   /users/{userId}:
     get:
       summary: Get user by ID
+      description: |
+        - Get task by userId.
+        - Give 404 not found error if invalid userId.
       tags:
         - User
       parameters:
@@ -381,4 +416,3 @@ components:
           type: integer
         number:
           type: integer
-
